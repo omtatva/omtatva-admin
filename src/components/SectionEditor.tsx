@@ -1,6 +1,6 @@
 "use client";
 
-import type { CmsData } from "@/types/cms";
+import type { CmsData, PageHeroesConfig } from "@/types/cms";
 import { useCms } from "@/components/CmsProvider";
 import {
   Field,
@@ -52,6 +52,7 @@ export default function SectionEditor({ slug }: { slug: string }) {
       <div className="mt-8 space-y-6 rounded-lg border border-zinc-800 bg-zinc-900/50 p-6">
         {slug === "site" && <SiteEditor cms={cms} patch={patch} />}
         {slug === "navigation" && <NavigationEditor cms={cms} patch={patch} />}
+        {slug === "page-heroes" && <PageHeroesEditor cms={cms} patch={patch} />}
         {slug === "hero" && <HeroEditor cms={cms} patch={patch} />}
         {slug === "featured-films" && <FeaturedFilmsEditor cms={cms} patch={patch} />}
         {slug === "trending" && <TrendingEditor cms={cms} patch={patch} />}
@@ -165,6 +166,48 @@ function NavigationEditor({ cms, patch }: { cms: CmsData; patch: PatchFn }) {
           }}
         />
       </Field>
+    </div>
+  );
+}
+
+const PAGE_HERO_FIELDS: { key: keyof PageHeroesConfig; label: string }[] = [
+  { key: "films", label: "Films page" },
+  { key: "trending", label: "Trending page" },
+  { key: "news", label: "News page" },
+  { key: "studios", label: "Studios page" },
+  { key: "contact", label: "Contact page" },
+  { key: "careers", label: "Careers page" },
+];
+
+const EMPTY_PAGE_HEROES: PageHeroesConfig = {
+  films: "",
+  trending: "",
+  news: "",
+  studios: "",
+  contact: "",
+  careers: "",
+};
+
+function PageHeroesEditor({ cms, patch }: { cms: CmsData; patch: PatchFn }) {
+  const heroes = { ...EMPTY_PAGE_HEROES, ...cms.pageHeroes };
+  const set = (key: keyof PageHeroesConfig, value: string) =>
+    patch((d) => ({
+      ...d,
+      pageHeroes: { ...EMPTY_PAGE_HEROES, ...d.pageHeroes, [key]: value },
+    }));
+  return (
+    <div className="space-y-6">
+      <p className="text-sm text-zinc-400">
+        Set the hero banner image shown at the top of each page.
+      </p>
+      {PAGE_HERO_FIELDS.map(({ key, label }) => (
+        <ImageUrlField
+          key={key}
+          label={label}
+          value={heroes[key]}
+          onChange={(value) => set(key, value)}
+        />
+      ))}
     </div>
   );
 }
@@ -1150,6 +1193,16 @@ function BtsEditor({ cms, patch }: { cms: CmsData; patch: PatchFn }) {
       header: "Duration",
       cell: (item) => <span className="text-zinc-400">{item.duration}</span>,
     },
+    {
+      id: "video",
+      header: "Video",
+      cell: (item) =>
+        item.video ? (
+          <span className="text-emerald-400">✓ Linked</span>
+        ) : (
+          <span className="text-zinc-600">—</span>
+        ),
+    },
   ];
 
   return (
@@ -1162,7 +1215,7 @@ function BtsEditor({ cms, patch }: { cms: CmsData; patch: PatchFn }) {
           ...d,
           btsItems: [
             ...d.btsItems,
-            { id: newId(), title: "New BTS", image: "", duration: "0:00" },
+            { id: newId(), title: "New BTS", image: "", duration: "0:00", video: "" },
           ],
         }))
       }
@@ -1186,6 +1239,23 @@ function BtsEditor({ cms, patch }: { cms: CmsData; patch: PatchFn }) {
             value={item.image}
             onChange={(image) => updateItem(item.id, (b) => ({ ...b, image }))}
           />
+          <Field label="Video URL" className="sm:col-span-2">
+            <div className="flex flex-col gap-3">
+              <Input
+                value={item.video}
+                onChange={(e) => updateItem(item.id, (b) => ({ ...b, video: e.target.value }))}
+                placeholder="https://…/video.mp4"
+                className="text-xs"
+              />
+              {item.video && (
+                <video
+                  src={item.video}
+                  controls
+                  className="max-h-48 w-full rounded-md border border-zinc-700 bg-black"
+                />
+              )}
+            </div>
+          </Field>
         </EditPanel>
       )}
     />

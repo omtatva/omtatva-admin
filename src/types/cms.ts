@@ -46,6 +46,7 @@ export interface BTSItem {
   title: string;
   image: string;
   duration: string;
+  video: string;
 }
 
 export interface MegaMenuItem {
@@ -163,11 +164,21 @@ export interface NavigationSettings {
   megaMenus: MegaMenuConfig[];
 }
 
+export interface PageHeroesConfig {
+  films: string;
+  trending: string;
+  news: string;
+  studios: string;
+  contact: string;
+  careers: string;
+}
+
 export interface CmsData {
   version: number;
   updatedAt: string;
   site: SiteSettings;
   navigation: NavigationSettings;
+  pageHeroes: PageHeroesConfig;
   hero: HeroSection;
   sections: {
     featuredFilms: FeaturedFilmsSection;

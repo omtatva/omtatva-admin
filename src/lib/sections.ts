@@ -19,6 +19,12 @@ export const ADMIN_SECTIONS: AdminSection[] = [
     group: "Site",
   },
   {
+    slug: "page-heroes",
+    title: "Page Hero Images",
+    description: "Hero banner images for Films, Trending, News, Studios, Contact, Careers",
+    group: "Site",
+  },
+  {
     slug: "hero",
     title: "Hero Banner",
     description: "Homepage hero — headline, image, CTAs",
